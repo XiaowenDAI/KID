@@ -73,11 +73,6 @@ for l in ligands:
         ligands_standerdized.append((l[0],l[1],Chem.MolToSmiles(ls,canonical=True)))
 
 #==============================================================================
-'''
-    加完整分子信息以及去重
-    fa_pairs去重依据：碎片及其来源分子、针对的氨基酸均一致
-    sd_pairs去重依据：针对同一靶点相同的sd_pairs
-'''
 for p in scaffold_decoration_pairs:
     for item in ligands_standerdized:
         if p[1] == item[1]:
@@ -115,13 +110,13 @@ for i in range(0,len(scaffold_decoration_pairs)):
         if '*' in scaffold_decoration_pairs[i][j]:
             scaffold_decoration_pairs[i][j] = Chem.MolToSmiles(Standardize(scaffold_decoration_pairs[i][j]))
 
-#去重 ,修改了去重算法           
+#Deduplication          
 invalid_idx = []
 for i in range(0,len(scaffold_decoration_pairs)):
     if i not in invalid_idx:
         for j in range(i+1,len(scaffold_decoration_pairs)):
             if operator.eq(scaffold_decoration_pairs[i][0],scaffold_decoration_pairs[j][0]):
-                if operator.eq(scaffold_decoration_pairs[i][2:],scaffold_decoration_pairs[j][2:]):  #仅针对同一个化合物对同一个靶点去重
+                if operator.eq(scaffold_decoration_pairs[i][2:],scaffold_decoration_pairs[j][2:]):  
                     invalid_idx.append(j)
 invalid_idx = list(set(invalid_idx))
 invalid_idx = sorted(invalid_idx)       
@@ -145,7 +140,7 @@ for i in range(0,len(fragment_amino_acid_pairs)):
     if i not in invalid_idx:
         for j in range(i+1,len(fragment_amino_acid_pairs)):
             if operator.eq(fragment_amino_acid_pairs[i][0],fragment_amino_acid_pairs[j][0]):
-                if operator.eq(fragment_amino_acid_pairs[i][3:],fragment_amino_acid_pairs[j][3:]):  #仅针对同一个化合物对同一个靶点去重
+                if operator.eq(fragment_amino_acid_pairs[i][3:],fragment_amino_acid_pairs[j][3:]):  
                     invalid_idx.append(j)
 invalid_idx = list(set(invalid_idx))
 invalid_idx = sorted(invalid_idx)       
@@ -197,41 +192,7 @@ with open('paper_test/2.sd_pairs_preprocessed_for_decorator.txt','w') as f:
                 f.write(line[i])
         f.write('\n')
     f.close() 
-
-
-#==================================试图查看和论文里原来写的数据为什么不一样
-sd_pairs_3344 = []   
-with open('2.scaffold_decoration_pairs_filtered.txt','r') as f:
-    for line in f.readlines():
-        l = line.replace("\n", "")
-        l = l.split(',')
-        sd_pairs_3344.append(l)
-    f.close()    
-    
-sd_pairs_now = []
-for i in range(0,len(scaffold_decoration_pairs)):
-    for j in range(3,len(scaffold_decoration_pairs[i])):
-        if '*' in scaffold_decoration_pairs[i][j] and '*' not in scaffold_decoration_pairs[i][j-1]:
-            tmp = scaffold_decoration_pairs[i][j:]
-            sd_pairs_now.append(tmp)
-
-not_exist = []
-for i in range(0,len(sd_pairs_now)):
-    flag = False
-    for j in range(0,len(sd_pairs_3344)):
-        now = sd_pairs_now[i][:-1]
-        if operator.eq(now,sd_pairs_3344[j]):
-            flag = True
-    if flag == False:
-        not_exist.append(i)
-
-            
-            
-            
-            
-            
-            
-            
+                                                                           
             
             
             
